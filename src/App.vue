@@ -8,32 +8,58 @@
         query: '',
         weather: {},
       }
+    },
+    methods: {
+      fetchWeather(e) {
+        if(e.key == "Enter") {
+          fetch(`${this.url_base}find?q=${this.query}&units=metric&APPID=${this.api_key}`)
+          .then(res => {
+            return res.json();
+          }).then(this.setResults);
+        }
+      },
+      setResults(results) {
+        this.weather = results;
+      },
+
+      dateBuilder(){
+        let date = new Date();
+        return date.toLocaleDateString("en")
+      }
     }
   }
 </script>
 
 <template>
-  <div id="app">
+  <div id="app"
+    :class="weather.list[0].main.temp > 16 ?
+    'warm' : ''"
+  >
 
     <main>
       <!-- SEARCH BOX -->
       <div class="search-box">
-        <input type="text" class="search-bar" placeholder="Search..."/>
+        <input 
+        type="text" 
+        class="search-bar" 
+        placeholder="Search..."
+        v-model="query"
+        @keypress="fetchWeather"
+        />
       </div>
 
       <!-- WEATHER WRAP -->
-      <div class="weather-wrap">
-
+      <div class="weather-wrap" v-if="query.length != 0">
         <!-- LOCATION BOX -->
         <div class="location-box">
-          <div class="location">Northampton, UK</div>
-          <div class="date">Monday 20 January 2022</div>
+          <div class="location"> {{weather.list[0].name}}, {{weather.list[0].sys.country}}</div> 
+          <div class="date">{{dateBuilder()}}</div>
         </div>
 
         <!-- WEATHER BOX -->
         <div class="weather-box">
-          <div class="temp">9°c</div>
-          <div class="weather">Rain</div>
+          <div class="temp">{{Math.round(weather.list[0].main.temp)}}°c</div>
+          <div class="weather">{{weather.list[0].weather[0].main}}</div>
         </div>
 
       </div>
@@ -63,6 +89,11 @@
     background-size: cover;
     background-position: bottom;
     transition: 0.4s;
+  }
+
+  #app.warm 
+  {
+    background-image: url('./assets/warm-bg.jpg');
   }
 
   main 
