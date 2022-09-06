@@ -32,10 +32,10 @@
 
 <template>
   <div id="app"
-    :class="weather.list[0].main.temp > 16 ?
+    :class="typeof weather.list !='undefined' && weather.list[0].main.temp > 16 ?
     'warm' : ''"
   >
-
+ 
     <main>
       <!-- SEARCH BOX -->
       <div class="search-box">
